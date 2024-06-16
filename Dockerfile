@@ -13,6 +13,7 @@ COPY . .
 # Port expose
 EXPOSE 80
 EXPOSE 5432
+EXPOSE 5000
 
 # Run Program
 CMD []

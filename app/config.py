@@ -1,11 +1,9 @@
-import docker
+import docker, os, asyncio
 from docker.errors import NotFound
-import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy import text
-from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine, async_sessionmaker
 
 load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__name__))
@@ -43,17 +41,27 @@ except NotFound:
 DB_HOST = client.inspect_container('some-postgres')['NetworkSettings']['Networks']['bridge']['Gateway']
 
 
-engine = create_engine('postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME)
+async_engine = create_async_engine('postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME)
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME
 
-Session = sessionmaker(bind=engine)
+asyncSessionLocal = async_sessionmaker(
+    bind=async_engine, 
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autocommit=True, 
+    autoflush=False
+)
 
-def get_all_db_names():
+async def get_all_db_names():
     """Sample function to show whether the function works or not"""
-    with engine.connect() as connection:
-        result = connection.execute(text("SELECT datname FROM pg_database WHERE datistemplate = false;"))
+    async with async_engine.connect() as connection:
+        result = await connection.execute(text("SELECT datname FROM pg_database WHERE datistemplate = false;"))
         databases = [row[0] for row in result]
     return databases
 
+async def main():
+    res = await get_all_db_names()
+    print(res)
+
 if __name__ == "__main__":
-    print(get_all_db_names())
+    asyncio.run(main())
