@@ -1,19 +1,18 @@
+# Real Time Weather Alert API
 
+### How to run the application locally
 
-## How to run the application in local
-
-  1- Give Permissions
-    ```
+1. Give permissions
+    ```bash
     chmod +x run-local.sh
     ```
 
-  2- Build image
-    ``` 
+2. Build the Docker image
+    ```bash
     docker build -t weather-app-image .
     ```
 
-  3- Run script
-   ```
-   ./run-local.sh
-   ```
-
+3. Run the script
+    ```bash
+    ./run-local.sh
+    ```
