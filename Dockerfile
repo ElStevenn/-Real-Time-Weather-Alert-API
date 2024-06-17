@@ -1,19 +1,20 @@
-# Image Python 3.12 it's the image used for this program. Enjoy
+# Use the Python 3.12 slim image
 FROM python:3.12-slim
 
-# Define Workdir directory
+# Define the working directory
 WORKDIR /app
 
-# Install Requirements
+# Copy and install requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application code
 COPY . .
 
-# Port expose
+# Expose the necessary ports
 EXPOSE 80
 EXPOSE 5432
 EXPOSE 5000
 
-# Run Program
-CMD []
+# Command to run the program
+CMD ["python3", "main.py"]
