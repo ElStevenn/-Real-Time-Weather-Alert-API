@@ -40,7 +40,6 @@ except NotFound:
 
 DB_HOST = client.inspect_container('some-postgres')['NetworkSettings']['Networks']['bridge']['Gateway']
 
-
 async_engine = create_async_engine('postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME)
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME
 
