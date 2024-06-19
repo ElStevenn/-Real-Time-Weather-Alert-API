@@ -1,9 +1,13 @@
-from database import Base
 from sqlalchemy import String, UUID, BINARY, Float, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID as pgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from datetime import datetime
 import uuid
+
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
 
 class User(Base):
     __tablename__ = "user"
@@ -11,7 +15,7 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(pgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username: Mapped[String] = mapped_column(String(40), nullable=False)
     email: Mapped[String] = mapped_column(String(40), nullable=False)
-    hashed_password = Mapped[bytes] = mapped_column(BINARY, nullable=False)
+    hashed_password: Mapped[bytes] = mapped_column(BINARY, nullable=False)
 
     # Define relationship 1:N with subscriptions
     subscriptions: Mapped[list["Subscriptions"]] = relationship("Subscriptions", back_populates="user")

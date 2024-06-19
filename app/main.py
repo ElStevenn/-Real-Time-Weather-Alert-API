@@ -1,14 +1,37 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
 from datetime import timedelta, timezone
 from schemas import *
 from security import create_access_token, get_current_user
-import asyncio
-import uvicorn
+from dotenv import load_dotenv
+import uvicorn, os, asyncio
 
-app = FastAPI()
+app = FastAPI(
+    title="Weather Real-Time Application",
+    description="An application to get realtime weather updates",
+    version="1.0.0",
+)
+
+origins = [
+    "http://127.0.0.1:800",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+load_dotenv()
+
+secret_key = os.getenv("SECRET_KEY")
 
 @app.get("/")
 async def root():
@@ -70,10 +93,7 @@ async def send_alert(current_user: User = Depends(get_current_user)):
 
 
 
-async def main():
-    config = uvicorn.Config("main:app", port=8080, log_level="info", reload=True)
-    server = uvicorn.Server(config)
-    await server.serve()
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,9 +1,8 @@
 import docker, os, asyncio
 from docker.errors import NotFound
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__name__))
@@ -27,7 +26,7 @@ except NotFound:
     # Run Docker container 
     dockerClient.containers.run(
         'postgres:latest',
-        name='container',
+        name='db-container',
         environment=[
             'POSTGRES_PASSWORD=' + DB_PASS
         ],
@@ -38,10 +37,11 @@ except NotFound:
         }
     )
 
-DB_HOST = client.inspect_container('some-postgres')['NetworkSettings']['Networks']['bridge']['Gateway']
+DB_HOST = client.inspect_container('db-container')['NetworkSettings']['Networks']['custom-isolated-network']['IPAddress']
+print(DB_HOST)
 
-async_engine = create_async_engine('postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME)
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5000/' + DB_NAME
+async_engine = create_async_engine('postgresql+asyncpg://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5432/' + DB_NAME)
+SQLALCHEMY_DATABASE_URI = 'postgresql+asyncpg://' + DB_USER + ':' + DB_PASS + '@' + DB_HOST + ':5432/' + DB_NAME
 
 asyncSessionLocal = async_sessionmaker(
     bind=async_engine, 
