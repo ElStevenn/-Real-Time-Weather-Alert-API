@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
+from security import encrypter
+from orm import models, crud
+from orm import schemas as orm_schemas
 from typing import Annotated
 from datetime import timedelta, timezone
 from schemas import *
@@ -33,16 +37,29 @@ load_dotenv()
 
 secret_key = os.getenv("SECRET_KEY")
 
+
 @app.get("/")
 async def root():
     return {"response": "Hello, welcome to Weather Real-Time Application"}
 
-@app.post("/register", description="Register a new user")
+@app.get("/get_public_key", tags=["Security"], response_class=PlainTextResponse, description="Get the public key to encrypt the password.\n**Encryption method**: RSA\n\n**Instructions for the client**:\n1. Retrieve the public key using this endpoint.\n2. Use the public key to encrypt the password on the client side using RSA encryption with OAEP padding and SHA-256 hash algorithm.\n3. Send the encrypted password to the backend when registering or authenticating.")
+async def get_public_key():
+    return encrypter.get_public_key()
+
+@app.post("/register", description="Register a new user", tags=["Users Handle"])
 async def register_new_user(request_boddy: RegisterUser):
-    return {"response": "under construction"}
+
+    # Create user in db
+    await crud.register_new_user(orm_schemas.UserCreateSchema(username=request_boddy.username, email=request_boddy.username))
+
+    # Create token session
+    beaber_token = create_access_token(data={"sub": request_boddy.username})
 
 
-@app.post("/login", description="Login a user")
+    return {"access_token": beaber_token, "token_type": "bearer"}
+
+
+@app.post("/login", description="Login a user", tags=["Users Handle"])
 async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
      # Authenticate user in db
     user = None 
@@ -60,7 +77,7 @@ async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
     return Token(access_token=access_token, token_type="bearer")
    
 
-@app.get("/profile", description="Get user profile", response_model=Token)
+@app.get("/profile", description="Get user profile", response_model=Token, tags=["Users Handle"])
 async def get_profile(current_user: User = Depends(get_current_user)):
     return {"response": "under construction"}
 

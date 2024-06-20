@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 import uuid
 
 # SCHEMAS FOR REQUEST
@@ -7,8 +8,8 @@ class BaseUser(BaseModel):
     username: str
 
 class RegisterUser(BaseUser):
-    email: str
-    password: str
+    email: EmailStr
+    hashed_password: Optional[str] = None
 
 class User(BaseUser):
     id: uuid.UUID

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from config import async_engine
-from orm.models import *  
+from orm.models import *
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,4 +16,5 @@ async def init_models():
         logger.info("Tables created successfully")
 
 if __name__ == "__main__":
+    """If you desire, you can create the tables (models) inside the container running this"""
     asyncio.run(init_models())
