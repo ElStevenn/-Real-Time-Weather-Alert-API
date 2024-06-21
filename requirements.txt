@@ -4,3 +4,5 @@ pyjwt
 passlib[bcrypt]
 docker
 SQLAlchemy
+psycopg2
+cryptography

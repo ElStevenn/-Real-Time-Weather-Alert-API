@@ -10,9 +10,15 @@
 2. Build the Docker image
     ```bash
     docker build -t weather-app-image .
-    ```
+    ``` 
 
 3. Run the script
     ```bash
     ./run-local.sh
     ```
+
+#### If you use fedora as localhost execute:
+    ```bash
+    sudo dnf install postgresql-devel
+    ```
+

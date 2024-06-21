@@ -29,6 +29,15 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+def decode_token(token):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = verify_token(token) 
     if not user:
@@ -137,7 +146,8 @@ encrypter = AES_256_encrypter()
 
 
 if __name__ == "__main__":
-   # Example usage
+    """
+   # Example usage for password encrytion
     user_name = "mrpau"
     password = "helo123"
     
@@ -156,3 +166,11 @@ if __name__ == "__main__":
     # Decrypt the data
     decrypted_data = encrypter.decrypt(encrypted_data, password)
     print(f"Decrypted Data: {decrypted_data}")
+    """
+    # Exampe for token
+    token = create_access_token({"sub": "mrpau"})
+    print(token)
+
+    # Decode token
+    decoded_token = decode_token(token)
+    print(decoded_token)

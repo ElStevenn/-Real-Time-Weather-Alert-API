@@ -9,12 +9,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY app/ .
 
-# Expose the necessary ports
+# Expose necessary ports
+EXPOSE 8000
 EXPOSE 80
 EXPOSE 5432
 EXPOSE 5000
 
-# Command to run the program
+# Command to run the application
 CMD ["python3", "main.py"]

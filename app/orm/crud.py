@@ -1,6 +1,7 @@
 from config import asyncSessionLocal, async_engine
 from . import models, schemas
 from sqlalchemy.ext.asyncio import AsyncSession
+# from ..security import get_password_hash
 import asyncio
 
 async def get_db() -> AsyncSession:
@@ -22,6 +23,11 @@ async def register_new_user(user_body: schemas.UserCreateSchema):
 
 async def get_user(user_id: str):
     pass
+
+async def authenticate_user(user, password: str):
+
+    pass
+
 
 async def main():
     user_schema = schemas.UserCreateSchema(
