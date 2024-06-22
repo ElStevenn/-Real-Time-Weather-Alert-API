@@ -13,6 +13,8 @@ get_env() {
     fi
 }
 
+export DOCKER_HOST=unix:///run/docker.sock
+
 # Check if docker is installed
 if ! command -v docker &> /dev/null; then
     echo "Docker is not installed, please install it."
