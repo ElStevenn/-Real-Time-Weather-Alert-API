@@ -39,7 +39,7 @@ def decode_token(token):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    user = verify_token(token) 
+    user = await verify_token(token) 
     if not user:
         raise HTTPException(
 
@@ -47,8 +47,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return user
+    return user['sub']
 
+async def verify_token(token: str):
+    try:
+        payload = decode_token(token)
+        return payload
+    except HTTPException as e:
+        raise e
 
 class AES_256_encrypter:
     def __init__(self):

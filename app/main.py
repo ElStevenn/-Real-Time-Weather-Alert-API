@@ -47,17 +47,17 @@ async def get_public_key():
     return encrypter.get_public_key()
 
 @app.post("/register", description="Register a new user", tags=["Users Handle"])
-async def register_new_user(request_boddy: RegisterUser):
+async def register_new_user(request_body: RegisterUser):
+    
+    await crud.register_new_user(
+        username=request_body.username,
+        email=request_body.email,
+        hashed_password=request_body.hashed_password.get_secret_value()
+        )
+ 
 
-    # Create user in db
-    await crud.register_new_user(orm_schemas.UserCreateSchema(username=request_boddy.username, email=request_boddy.username))
-
-    # Create token session
-    beaber_token = create_access_token(data={"sub": request_boddy.username})
-
-
-    return {"access_token": beaber_token, "token_type": "bearer"}
-
+    bearer_token = create_access_token(data={"sub": request_body.username})
+    return {"access_token": bearer_token, "token_type": "bearer"}
 
 @app.post("/login", description="Login a user", tags=["Users Handle"])
 async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
@@ -77,8 +77,9 @@ async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
     return Token(access_token=access_token, token_type="bearer")
    
 
-@app.get("/profile", description="Get user profile", response_model=Token, tags=["Users Handle"])
-async def get_profile(current_user: User = Depends(get_current_user)):
+@app.get("/profile", description="Get user profile", tags=["Users Handle"])
+async def get_profile(token: Annotated[str, Depends(oauth2_scheme)]):
+
     return {"response": "under construction"}
 
 """Subscription Management"""

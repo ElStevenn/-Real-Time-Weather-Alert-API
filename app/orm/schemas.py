@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 from datetime import datetime
 
@@ -44,7 +44,7 @@ class AlertSchema(BaseModel):
         orm_mode = True
 
 class UserCreateSchema(BaseModel):
-    username: str = Field(max_length=40)
+    username: str
     email: EmailStr
     hashed_password: bytes
 
